@@ -1,73 +1,423 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sense & Solve</title>
   <style>
-    body { font-family: Arial; padding: 30px; background: #f5f5f5; }
-    .card { background: white; padding: 20px; margin: 10px 0; border-radius: 10px; }
-    button { padding: 12px 20px; font-size: 16px; cursor: pointer; }
+    :root {
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #5b6472;
+      --border: #e5e7eb;
+      --problem: #fde8e8;
+      --problem-accent: #c2410c;
+      --sensing: #e0f2fe;
+      --sensing-accent: #0369a1;
+      --constraint: #fef3c7;
+      --constraint-accent: #b45309;
+      --button: #111827;
+      --button-hover: #000000;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(59,130,246,0.08), transparent 28%),
+        radial-gradient(circle at top right, rgba(245,158,11,0.08), transparent 24%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 60px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: var(--shadow);
+      border-radius: 30px;
+      padding: 40px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4338ca;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 760px;
+      font-size: 1.05rem;
+      color: var(--muted);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      margin-top: 26px;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      background: var(--button);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 14px 20px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 8px 18px rgba(17, 24, 39, 0.18);
+    }
+
+    button:hover {
+      background: var(--button-hover);
+      transform: translateY(-1px);
+    }
+
+    .checkbox-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      min-height: 220px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 8px;
+      border-radius: 20px 0 0 20px;
+    }
+
+    .problem { grid-column: span 4; background: linear-gradient(180deg, #fff, var(--problem)); }
+    .problem::before { background: var(--problem-accent); }
+
+    .sensing { grid-column: span 4; background: linear-gradient(180deg, #fff, var(--sensing)); }
+    .sensing::before { background: var(--sensing-accent); }
+
+    .constraint { grid-column: span 4; background: linear-gradient(180deg, #fff, var(--constraint)); }
+    .constraint::before { background: var(--constraint-accent); }
+
+    .label {
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .problem .label { color: var(--problem-accent); }
+    .sensing .label { color: var(--sensing-accent); }
+    .constraint .label { color: var(--constraint-accent); }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.45rem;
+      line-height: 1.25;
+      letter-spacing: -0.03em;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      margin-top: 22px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 26px;
+    }
+
+    .panel h3 {
+      margin: 0 0 14px;
+      font-size: 1.5rem;
+      letter-spacing: -0.03em;
+    }
+
+    .panel p,
+    .panel li {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .panel ul {
+      padding-left: 20px;
+      margin: 10px 0 0;
+    }
+
+    .prompt-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .prompt {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fafafa;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .footer-note {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .rules {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .rule-box {
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .rule-box strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.98rem;
+    }
+
+    @media (max-width: 900px) {
+      .problem, .sensing, .constraint { grid-column: span 12; }
+      .layout { grid-template-columns: 1fr; }
+      .rules { grid-template-columns: 1fr; }
+      .hero { padding: 28px; }
+    }
   </style>
 </head>
 <body>
+  <div class="container">
+    <section class="hero">
+      <div class="eyebrow">Built Environment Design Game</div>
+      <h1>Sense &amp; Solve</h1>
+      <p>
+        Draw a built environment problem, a sensing method, and an optional constraint. Then develop a realistic solution that turns data into a decision and a real-world action.
+      </p>
 
-<h1>Sense & Solve</h1>
-<p>Click to generate a problem, sensing method, and constraint.</p>
+      <div class="controls">
+        <button onclick="generateCards()">Generate New Combination</button>
+        <label class="checkbox-wrap">
+          <input type="checkbox" id="useConstraint" checked onchange="toggleConstraint()" />
+          Include constraint card
+        </label>
+      </div>
+    </section>
 
-<button onclick="generate()">Generate</button>
+    <section class="grid">
+      <article class="card problem">
+        <div class="label">Problem Card</div>
+        <h2 id="problemText"></h2>
+      </article>
 
-<div class="card">
-  <h3>Problem</h3>
-  <p id="problem"></p>
-</div>
+      <article class="card sensing">
+        <div class="label">Sensing Card</div>
+        <h2 id="sensingText"></h2>
+      </article>
 
-<div class="card">
-  <h3>Sensing</h3>
-  <p id="sensing"></p>
-</div>
+      <article class="card constraint" id="constraintCard">
+        <div class="label">Constraint Card</div>
+        <h2 id="constraintText"></h2>
+      </article>
+    </section>
 
-<div class="card">
-  <h3>Constraint</h3>
-  <p id="constraint"></p>
-</div>
+    <section class="layout">
+      <div class="panel">
+        <h3>Your Challenge</h3>
+        <p>
+          Use the generated cards to design a practical system that addresses the problem using the assigned sensing method. The goal is not just to collect data, but to show how that data becomes useful for a decision-maker.
+        </p>
 
-<script>
-const problems = [
-  "Prioritize which potholes should be fixed first",
-  "Identify where flooding is most likely",
-  "Find where buildings lose the most energy",
-  "Identify dangerous intersections",
-  "Where is urban heat worst?"
-];
+        <h3>What your team should produce</h3>
+        <ul>
+          <li>What decision is being improved</li>
+          <li>What data is being collected and how it is gathered</li>
+          <li>How the data is processed or interpreted</li>
+          <li>What output the system produces, such as a map, alert, ranking, or dashboard</li>
+          <li>Who uses the output and what action they take</li>
+          <li>The biggest limitation or weakness of your approach</li>
+        </ul>
 
-const sensing = [
-  "Drone imagery",
-  "Thermal imaging",
-  "Social media data",
-  "311 complaints",
-  "LiDAR",
-  "Wearables"
-];
+        <div class="rules">
+          <div class="rule-box">
+            <strong>Be realistic</strong>
+            Your idea should make sense in the real world, not just in theory.
+          </div>
+          <div class="rule-box">
+            <strong>Use the assigned sensor</strong>
+            You may not replace the sensing method with a different one.
+          </div>
+          <div class="rule-box">
+            <strong>Acknowledge limitations</strong>
+            Good design includes what might fail, bias, or break down.
+          </div>
+        </div>
 
-const constraints = [
-  "Limited budget",
-  "Must deploy in 2 weeks",
-  "No new hardware",
-  "Rural area",
-  "Data is incomplete"
-];
+        <p class="footer-note">
+          Suggested class use: 3–4 students per team, 15–20 minutes to develop a concept, then a 2-minute pitch.
+        </p>
+      </div>
 
-function random(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
+      <aside class="panel">
+        <h3>Prompt Starters</h3>
+        <div class="prompt-list">
+          <div class="prompt">What decision is being improved?</div>
+          <div class="prompt">Who would use this system?</div>
+          <div class="prompt">What data would be collected, and how often?</div>
+          <div class="prompt">How does raw data become something actionable?</div>
+          <div class="prompt">What would the final output look like?</div>
+          <div class="prompt">What is the biggest flaw or risk in the approach?</div>
+        </div>
+      </aside>
+    </section>
+  </div>
 
-function generate() {
-  document.getElementById("problem").innerText = random(problems);
-  document.getElementById("sensing").innerText = random(sensing);
-  document.getElementById("constraint").innerText = random(constraints);
-}
+  <script>
+    const problemCards = [
+      "Prioritize which potholes should be fixed first",
+      "Identify where flooding is most likely during the next storm",
+      "Determine which sidewalks are least accessible or most hazardous",
+      "Find where buildings are losing the most energy",
+      "Identify which intersections are most dangerous for pedestrians",
+      "Determine where stormwater infrastructure is failing",
+      "Prioritize which parking garages need EV charging retrofits first",
+      "Identify where urban heat is worst at street level",
+      "Determine which areas have the greatest risk of standing water after rain",
+      "Identify which campus spaces are underused or overcrowded",
+      "Find where bank erosion is most severe along a stream or pond",
+      "Determine which bridges or structures should be inspected first",
+      "Identify where construction progress is falling behind schedule",
+      "Determine which neighborhoods are most vulnerable during extreme heat",
+      "Find where water quality problems are most likely to occur"
+    ];
 
-generate();
-</script>
+    const sensingCards = [
+      "Drone RGB imagery",
+      "Thermal imaging",
+      "LiDAR",
+      "Satellite imagery",
+      "IoT water level sensors",
+      "Environmental sensors (temperature, humidity, PM2.5)",
+      "Smart meters",
+      "Ground-penetrating radar",
+      "Traffic cameras",
+      "Acoustic sensing",
+      "Social media data",
+      "311 complaints / service requests",
+      "Citizen-reported app data",
+      "Google Street View / historical imagery",
+      "Utility call logs",
+      "Insurance claims data",
+      "Maintenance records",
+      "Community surveys",
+      "Cell phone mobility data",
+      "Wearables"
+    ];
 
+    const constraintCards = [
+      "Budget is extremely limited",
+      "Must be deployed within 2 weeks",
+      "No new hardware can be purchased",
+      "Rural area with weak internet connectivity",
+      "Must protect user privacy",
+      "Must work during extreme weather",
+      "Only one staff member can manage the system",
+      "The public must be able to understand the output",
+      "The data is incomplete and unevenly distributed",
+      "The system must be scalable across an entire city",
+      "The client does not trust AI-based black boxes",
+      "The system must rely on existing infrastructure only",
+      "There is strong political pressure to show results quickly",
+      "The technology must be usable by non-experts",
+      "The solution must be low-maintenance for 5 years"
+    ];
+
+    function pickRandom(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function generateCards() {
+      document.getElementById("problemText").textContent = pickRandom(problemCards);
+      document.getElementById("sensingText").textContent = pickRandom(sensingCards);
+      document.getElementById("constraintText").textContent = pickRandom(constraintCards);
+      toggleConstraint();
+    }
+
+    function toggleConstraint() {
+      const enabled = document.getElementById("useConstraint").checked;
+      const card = document.getElementById("constraintCard");
+      card.style.opacity = enabled ? "1" : "0.5";
+      document.getElementById("constraintText").textContent = enabled
+        ? document.getElementById("constraintText").textContent || pickRandom(constraintCards)
+        : "Constraint card turned off";
+    }
+
+    generateCards();
+  </script>
 </body>
 </html>
