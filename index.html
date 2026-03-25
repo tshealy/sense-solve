@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sense & Solve</title>
+  <style>
+    body { font-family: Arial; padding: 30px; background: #f5f5f5; }
+    .card { background: white; padding: 20px; margin: 10px 0; border-radius: 10px; }
+    button { padding: 12px 20px; font-size: 16px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<h1>Sense & Solve</h1>
+<p>Click to generate a problem, sensing method, and constraint.</p>
+
+<button onclick="generate()">Generate</button>
+
+<div class="card">
+  <h3>Problem</h3>
+  <p id="problem"></p>
+</div>
+
+<div class="card">
+  <h3>Sensing</h3>
+  <p id="sensing"></p>
+</div>
+
+<div class="card">
+  <h3>Constraint</h3>
+  <p id="constraint"></p>
+</div>
+
+<script>
+const problems = [
+  "Prioritize which potholes should be fixed first",
+  "Identify where flooding is most likely",
+  "Find where buildings lose the most energy",
+  "Identify dangerous intersections",
+  "Where is urban heat worst?"
+];
+
+const sensing = [
+  "Drone imagery",
+  "Thermal imaging",
+  "Social media data",
+  "311 complaints",
+  "LiDAR",
+  "Wearables"
+];
+
+const constraints = [
+  "Limited budget",
+  "Must deploy in 2 weeks",
+  "No new hardware",
+  "Rural area",
+  "Data is incomplete"
+];
+
+function random(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function generate() {
+  document.getElementById("problem").innerText = random(problems);
+  document.getElementById("sensing").innerText = random(sensing);
+  document.getElementById("constraint").innerText = random(constraints);
+}
+
+generate();
+</script>
+
+</body>
+</html>
